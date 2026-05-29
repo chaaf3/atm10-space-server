@@ -1,0 +1,10 @@
+client-mods/
+player-guide/admin-provided-jars/
+player-guide/pdf-preview/
+player-guide/rendered/
+*.log
+
+terraform/**/.terraform/
+terraform/**/*.tfstate
+terraform/**/*.tfstate.*
+terraform/**/terraform.tfvars

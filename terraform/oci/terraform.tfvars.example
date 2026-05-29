@@ -1,0 +1,47 @@
+config_file_profile = "DEFAULT"
+auth                = "APIKey"
+
+# Pick your OCI region, for example:
+# us-ashburn-1, us-phoenix-1, uk-london-1, eu-frankfurt-1
+region = "us-ashburn-1"
+
+# Fill these with values from Oracle Cloud Console.
+tenancy_ocid     = "ocid1.tenancy.oc1..example"
+user_ocid        = "ocid1.user.oc1..example"
+compartment_ocid = "ocid1.compartment.oc1..example"
+fingerprint      = "aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99"
+private_key_path = "~/.oci/atm10_oci_api_key.pem"
+
+# Try 1 or 2 if Oracle says VM.Standard.A1.Flex is out of capacity in AD 0.
+availability_domain_index = 0
+
+# Fixed capacity. Terraform validation blocks reject larger/smaller values
+# unless the guardrails in variables.tf are intentionally changed.
+instance_shape      = "VM.Standard.A1.Flex"
+ocpus               = 6
+memory_gb           = 48
+boot_volume_size_gb = 500
+
+# 10 is Balanced block volume performance.
+boot_volume_vpus_per_gb = 10
+
+ssh_public_key_path = "~/.ssh/id_ed25519.pub"
+
+# Replace this with your public IP, e.g. ["203.0.113.10/32"].
+ssh_cidr_blocks = ["203.0.113.10/32"]
+
+# Public Minecraft server. Restrict this to player IPs if you want a private server.
+allowed_minecraft_cidr_blocks = ["0.0.0.0/0"]
+
+atm10_version        = "7.0"
+atm10_server_zip_url = "https://edge.forgecdn.net/files/8094/893/ServerFiles-7.0.zip"
+
+memory_min = "16G"
+memory_max = "20G"
+motd       = "ATM10 + Stellaris Space Server"
+
+# Only these Minecraft accounts can join. Leave empty only if you want nobody
+# to be able to join until the whitelist is updated.
+minecraft_whitelist = [
+  "YourMinecraftName",
+]

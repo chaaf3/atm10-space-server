@@ -1,0 +1,13 @@
+#cloud-config
+package_update: false
+package_upgrade: false
+
+write_files:
+  - path: /usr/local/sbin/provision-atm10.sh
+    owner: root:root
+    permissions: "0755"
+    encoding: b64
+    content: ${provision_script_b64}
+
+runcmd:
+  - ["bash", "-lc", "ATM10_VERSION='${atm10_version}' ATM10_SERVER_ZIP_URL='${atm10_server_zip_url}' MEMORY_MIN='${memory_min}' MEMORY_MAX='${memory_max}' MOTD='${motd}' MINECRAFT_WHITELIST='${minecraft_whitelist}' /usr/local/sbin/provision-atm10.sh"]
