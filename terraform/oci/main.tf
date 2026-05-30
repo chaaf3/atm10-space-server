@@ -120,6 +120,13 @@ resource "oci_core_instance" "server" {
   shape               = var.instance_shape
   freeform_tags       = local.common_tags
 
+  lifecycle {
+    ignore_changes = [
+      metadata["user_data"],
+      source_details[0].boot_volume_size_in_gbs,
+    ]
+  }
+
   shape_config {
     ocpus         = var.ocpus
     memory_in_gbs = var.memory_gb
