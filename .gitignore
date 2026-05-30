@@ -6,6 +6,7 @@ player-guide/rendered/
 
 terraform/**/.terraform/
 terraform/**/tfplan
+terraform/**/*.tfplan
 terraform/**/*.tfstate
 terraform/**/*.tfstate.*
 terraform/**/terraform.tfvars
