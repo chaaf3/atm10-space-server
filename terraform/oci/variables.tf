@@ -62,24 +62,24 @@ variable "instance_shape" {
 }
 
 variable "ocpus" {
-  description = "Fixed OCPU count for the server. Keep at 6 unless intentionally changing the capacity guardrail."
+  description = "Fixed OCPU count for the server. Guardrail caps this at the approved 6 OCPU ceiling."
   type        = number
   default     = 6
 
   validation {
-    condition     = var.ocpus == 6
-    error_message = "Server capacity is locked: ocpus must remain 6 unless you intentionally change the Terraform guardrail."
+    condition     = var.ocpus >= 1 && var.ocpus <= 6
+    error_message = "Server capacity is locked: ocpus must stay between 1 and the approved 6 OCPU ceiling."
   }
 }
 
 variable "memory_gb" {
-  description = "Fixed memory in GB for the server. Keep at 48 unless intentionally changing the capacity guardrail."
+  description = "Fixed memory in GB for the server. Guardrail caps this at the approved 48 GB ceiling."
   type        = number
   default     = 48
 
   validation {
-    condition     = var.memory_gb == 48
-    error_message = "Server capacity is locked: memory_gb must remain 48 unless you intentionally change the Terraform guardrail."
+    condition     = var.memory_gb >= 6 && var.memory_gb <= 48
+    error_message = "Server capacity is locked: memory_gb must stay between 6 and the approved 48 GB ceiling."
   }
 }
 
@@ -89,8 +89,8 @@ variable "boot_volume_size_gb" {
   default     = 500
 
   validation {
-    condition     = var.boot_volume_size_gb == 500
-    error_message = "Server capacity is locked: boot_volume_size_gb must remain 500 unless you intentionally change the Terraform guardrail."
+    condition     = var.boot_volume_size_gb >= 50 && var.boot_volume_size_gb <= 500
+    error_message = "Server capacity is locked: boot_volume_size_gb must stay between 50 and the approved 500 GB ceiling."
   }
 }
 

@@ -12,11 +12,12 @@ MEMORY_MIN="${MEMORY_MIN:-8G}"
 MEMORY_MAX="${MEMORY_MAX:-12G}"
 MOTD="${MOTD:-ATM10 + Stellaris Space Server}"
 MINECRAFT_WHITELIST="${MINECRAFT_WHITELIST:-}"
+SWAP_SIZE_GB="${SWAP_SIZE_GB:-8}"
 
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
-apt-get install -y ca-certificates curl unzip python3 "$JAVA_PACKAGE"
+apt-get install -y ca-certificates curl unzip python3 iptables-persistent "$JAVA_PACKAGE"
 
 if ! id -u "$ATM_USER" >/dev/null 2>&1; then
   useradd --system --home-dir "$ATM_DIR" --shell /usr/sbin/nologin "$ATM_USER"
@@ -314,12 +315,38 @@ EOF
   systemctl enable atm10
 }
 
+configure_swap() {
+  if [[ "$SWAP_SIZE_GB" == "0" ]]; then
+    return 0
+  fi
+
+  if [[ ! -f /swapfile ]]; then
+    fallocate -l "${SWAP_SIZE_GB}G" /swapfile
+    chmod 600 /swapfile
+    mkswap /swapfile
+  fi
+
+  swapon --show=NAME --noheadings | grep -qx /swapfile || swapon /swapfile
+  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+}
+
+configure_firewall() {
+  iptables -C INPUT -p tcp -m state --state NEW -m tcp --dport 25565 -j ACCEPT 2>/dev/null \
+    || iptables -I INPUT 5 -p tcp -m state --state NEW -m tcp --dport 25565 -j ACCEPT
+
+  mkdir -p /etc/iptables
+  iptables-save > /etc/iptables/rules.v4
+  netfilter-persistent save >/dev/null 2>&1 || true
+}
+
 install_server_pack
 install_space_mods
 write_server_properties
 write_whitelist
 write_runtime_files
 write_systemd_service
+configure_swap
+configure_firewall
 
 systemctl restart atm10
 systemctl --no-pager --full status atm10 || true
