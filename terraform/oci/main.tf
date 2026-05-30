@@ -19,13 +19,17 @@ locals {
   })
 
   user_data = templatefile("${path.module}/cloud-init.yaml.tftpl", {
-    provision_script_b64 = filebase64("${path.module}/../../scripts/provision-atm10.sh")
-    atm10_version        = var.atm10_version
-    atm10_server_zip_url = var.atm10_server_zip_url
-    minecraft_whitelist  = join(",", var.minecraft_whitelist)
-    memory_min           = var.memory_min
-    memory_max           = var.memory_max
-    motd                 = var.motd
+    provision_script_b64    = filebase64("${path.module}/../../scripts/provision-atm10.sh")
+    atm10_version           = var.atm10_version
+    atm10_server_zip_url    = var.atm10_server_zip_url
+    minecraft_whitelist     = join(",", var.minecraft_whitelist)
+    memory_min              = var.memory_min
+    memory_max              = var.memory_max
+    motd                    = var.motd
+    enable_cost_shutdown    = var.enable_cost_shutdown
+    cost_shutdown_threshold = var.cost_shutdown_threshold
+    cost_shutdown_budget_id = var.cost_shutdown_budget_id != "" ? var.cost_shutdown_budget_id : (var.enable_budget_alerts ? oci_budget_budget.monthly_server_budget[0].id : "")
+    region                  = var.region
   })
 }
 

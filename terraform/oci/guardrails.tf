@@ -51,3 +51,24 @@ resource "oci_budget_alert_rule" "monthly_server_budget" {
   threshold_type = each.value.threshold_type
   type           = each.value.type
 }
+
+resource "oci_identity_dynamic_group" "cost_shutdown" {
+  count = var.enable_cost_shutdown ? 1 : 0
+
+  compartment_id = var.tenancy_ocid
+  description    = "ATM10 server instance principal for budget-triggered shutdown."
+  matching_rule  = "instance.id = '${oci_core_instance.server.id}'"
+  name           = "${replace(var.name, "-", "_")}_cost_shutdown"
+}
+
+resource "oci_identity_policy" "cost_shutdown" {
+  count = var.enable_cost_shutdown ? 1 : 0
+
+  compartment_id = var.tenancy_ocid
+  description    = "Allow the ATM10 server to inspect its budget and stop itself when the shutdown threshold is reached."
+  name           = "${replace(var.name, "-", "_")}_cost_shutdown"
+  statements = [
+    "Allow dynamic-group ${oci_identity_dynamic_group.cost_shutdown[0].name} to read usage-budgets in tenancy",
+    "Allow dynamic-group ${oci_identity_dynamic_group.cost_shutdown[0].name} to use instances in tenancy where request.permission='INSTANCE_POWER_ACTIONS'",
+  ]
+}

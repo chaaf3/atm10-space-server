@@ -132,12 +132,35 @@ variable "enable_budget_alerts" {
 variable "monthly_budget_amount" {
   description = "Monthly OCI budget amount in the account currency. This is a soft alert threshold, not a hard spending cap."
   type        = number
-  default     = 75
+  default     = 60
 
   validation {
     condition     = var.monthly_budget_amount >= 1 && var.monthly_budget_amount <= 999999999999
     error_message = "monthly_budget_amount must be between 1 and 999999999999."
   }
+}
+
+variable "enable_cost_shutdown" {
+  description = "Install a server-side timer that stops the instance when actual or forecast OCI budget spend reaches the shutdown threshold."
+  type        = bool
+  default     = true
+}
+
+variable "cost_shutdown_threshold" {
+  description = "Budget spend amount that triggers automatic instance shutdown. The script checks actual and forecast spend."
+  type        = number
+  default     = 60
+
+  validation {
+    condition     = var.cost_shutdown_threshold >= 1 && var.cost_shutdown_threshold <= 999999999999
+    error_message = "cost_shutdown_threshold must be between 1 and 999999999999."
+  }
+}
+
+variable "cost_shutdown_budget_id" {
+  description = "Existing OCI budget OCID for the shutdown timer to inspect. Leave empty to use the budget created by this module."
+  type        = string
+  default     = ""
 }
 
 variable "budget_alert_recipients" {

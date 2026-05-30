@@ -10,4 +10,4 @@ write_files:
     content: ${provision_script_b64}
 
 runcmd:
-  - ["bash", "-lc", "ATM10_VERSION='${atm10_version}' ATM10_SERVER_ZIP_URL='${atm10_server_zip_url}' MEMORY_MIN='${memory_min}' MEMORY_MAX='${memory_max}' MOTD='${motd}' MINECRAFT_WHITELIST='${minecraft_whitelist}' /usr/local/sbin/provision-atm10.sh"]
+  - ["bash", "-lc", "ATM10_VERSION='${atm10_version}' ATM10_SERVER_ZIP_URL='${atm10_server_zip_url}' MEMORY_MIN='${memory_min}' MEMORY_MAX='${memory_max}' MOTD='${motd}' MINECRAFT_WHITELIST='${minecraft_whitelist}' ENABLE_COST_SHUTDOWN='${enable_cost_shutdown}' COST_SHUTDOWN_THRESHOLD='${cost_shutdown_threshold}' OCI_BUDGET_ID='${cost_shutdown_budget_id}' OCI_REGION='${region}' /usr/local/sbin/provision-atm10.sh"]

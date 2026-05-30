@@ -41,9 +41,10 @@ The OCI deployment also includes cost guardrails:
 
 - An OCI quota policy blocks accidental expansion beyond the approved A1 compute, memory, and 500 GB boot-volume footprint in the selected availability domain.
 - Autoscaling, instance pools, load balancers, extra VCNs, and reserved public IPs are blocked by default.
-- A monthly budget creates email alerts at 80% actual spend and 100% forecast spend.
+- A `$60` monthly budget creates email alerts at 80% actual spend and 100% forecast spend.
+- A systemd timer on the VM checks that budget every 30 minutes and stops the instance if actual or forecast spend reaches `$60`.
 
-Budgets are soft alerts, not hard billing caps. The quota policy is the hard control for new or expanded infrastructure, but it does not cap network egress, taxes, or manually created resources outside the guarded quota families.
+Budgets are soft alerts, not hard billing caps. The shutdown timer adds an active safeguard, but it still depends on OCI budget data freshness. The quota policy is the hard control for new or expanded infrastructure, but it does not cap network egress, taxes, or manually created resources outside the guarded quota families.
 
 Install OpenTofu and OCI CLI, then create/upload an OCI API signing key:
 

@@ -30,8 +30,10 @@ boot_volume_vpus_per_gb = 10
 enable_spending_guardrails = true
 quota_target               = "tenancy"
 enable_budget_alerts       = true
-monthly_budget_amount      = 75
+monthly_budget_amount      = 60
 budget_alert_recipients    = ["you@example.com"]
+enable_cost_shutdown       = true
+cost_shutdown_threshold    = 60
 
 ssh_public_key_path = "~/.ssh/id_ed25519.pub"
 
