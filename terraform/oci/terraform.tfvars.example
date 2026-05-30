@@ -25,6 +25,14 @@ boot_volume_size_gb = 500
 # 10 is Balanced block volume performance.
 boot_volume_vpus_per_gb = 10
 
+# Spending guardrails. Quotas are hard controls for new/expanded resources;
+# budgets are soft email alerts and do not stop billing by themselves.
+enable_spending_guardrails = true
+quota_target               = "tenancy"
+enable_budget_alerts       = true
+monthly_budget_amount      = 75
+budget_alert_recipients    = ["you@example.com"]
+
 ssh_public_key_path = "~/.ssh/id_ed25519.pub"
 
 # Replace this with your public IP, e.g. ["203.0.113.10/32"].

@@ -100,6 +100,78 @@ variable "boot_volume_vpus_per_gb" {
   default     = 10
 }
 
+variable "enable_spending_guardrails" {
+  description = "Create OCI quota policies that block accidental expansion beyond the fixed server footprint."
+  type        = bool
+  default     = true
+}
+
+variable "quota_target" {
+  description = "Target phrase used in OCI quota statements. Use 'tenancy' for the root compartment, or 'compartment Name' / 'compartment parent:child' for named compartments."
+  type        = string
+  default     = "tenancy"
+
+  validation {
+    condition     = can(regex("^(tenancy|compartment [A-Za-z0-9_: -]+)$", var.quota_target))
+    error_message = "quota_target must be 'tenancy' or a named compartment phrase such as 'compartment MyCompartment'."
+  }
+}
+
+variable "extra_quota_statements" {
+  description = "Additional OCI quota statements to append after the default fixed-capacity guardrails."
+  type        = list(string)
+  default     = []
+}
+
+variable "enable_budget_alerts" {
+  description = "Create a monthly OCI budget and email alert rules. Budgets are soft alerts, not hard spending caps."
+  type        = bool
+  default     = true
+}
+
+variable "monthly_budget_amount" {
+  description = "Monthly OCI budget amount in the account currency. This is a soft alert threshold, not a hard spending cap."
+  type        = number
+  default     = 75
+
+  validation {
+    condition     = var.monthly_budget_amount >= 1 && var.monthly_budget_amount <= 999999999999
+    error_message = "monthly_budget_amount must be between 1 and 999999999999."
+  }
+}
+
+variable "budget_alert_recipients" {
+  description = "Email addresses that receive OCI budget alerts."
+  type        = list(string)
+  default     = []
+}
+
+variable "budget_alert_rules" {
+  description = "Budget alert rules keyed by short name."
+  type = map(object({
+    threshold      = number
+    threshold_type = string
+    type           = string
+  }))
+  default = {
+    actual_80_percent = {
+      threshold      = 80
+      threshold_type = "PERCENTAGE"
+      type           = "ACTUAL"
+    }
+    forecast_100_percent = {
+      threshold      = 100
+      threshold_type = "PERCENTAGE"
+      type           = "FORECAST"
+    }
+  }
+
+  validation {
+    condition     = alltrue([for rule in values(var.budget_alert_rules) : contains(["PERCENTAGE", "ABSOLUTE"], rule.threshold_type) && contains(["ACTUAL", "FORECAST"], rule.type)])
+    error_message = "budget_alert_rules entries must use threshold_type PERCENTAGE or ABSOLUTE and type ACTUAL or FORECAST."
+  }
+}
+
 variable "ssh_public_key_path" {
   description = "Path to the SSH public key Terraform should install on the instance."
   type        = string

@@ -33,9 +33,17 @@ Recommended Oracle starting point for 6-10 players:
 - Shape: `VM.Standard.A1.Flex`
 - CPU/RAM: `6 OCPU`, `48 GB RAM`
 - Disk: `500 GB` boot volume
-- JVM heap: `16G` minimum, `20G` maximum
+- JVM heap: `12G` minimum, `24G` maximum
 
-This is the fixed Scale 1 setup. The Terraform variables include guardrails that reject plans above or below `6 OCPU`, `48 GB RAM`, and `500 GB` disk unless you deliberately edit those guardrails. There is no autoscaling group, instance pool, or scheduled scaling in this deployment. It should land around `$43-$49/month` before taxes/region differences, assuming your account gets the normal Always Free allowance for A1 compute and the first 200 GB of block storage.
+This is the fixed Scale 1 setup. The Terraform variables include guardrails that reject plans above or below `6 OCPU`, `48 GB RAM`, and `500 GB` disk unless you deliberately edit those guardrails. There is no autoscaling group, instance pool, or scheduled scaling in this deployment.
+
+The OCI deployment also includes cost guardrails:
+
+- An OCI quota policy blocks accidental expansion beyond the approved A1 compute, memory, and 500 GB boot-volume footprint in the selected availability domain.
+- Autoscaling, instance pools, load balancers, extra VCNs, and reserved public IPs are blocked by default.
+- A monthly budget creates email alerts at 80% actual spend and 100% forecast spend.
+
+Budgets are soft alerts, not hard billing caps. The quota policy is the hard control for new or expanded infrastructure, but it does not cap network egress, taxes, or manually created resources outside the guarded quota families.
 
 Install OpenTofu and OCI CLI, then create/upload an OCI API signing key:
 
@@ -61,6 +69,7 @@ Edit `terraform.tfvars`:
 - Set `fingerprint`.
 - Set `ssh_cidr_blocks` to your public IP as `x.x.x.x/32`.
 - Set `minecraft_whitelist` to the Minecraft account names allowed to join.
+- Set `budget_alert_recipients` to the email address that should receive OCI budget alerts.
 - Keep `allowed_minecraft_cidr_blocks = ["0.0.0.0/0"]` unless you only want specific players/IPs.
 
 Deploy:
