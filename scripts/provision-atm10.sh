@@ -150,7 +150,7 @@ desired = {
     "online-mode": "true",
     "white-list": "true",
     "enforce-whitelist": "true",
-    "difficulty": "normal",
+    "difficulty": "hard",
     "max-players": "10",
     "view-distance": "8",
     "simulation-distance": "6",
